@@ -86,7 +86,7 @@ Date,Task Key,What did you do?,Duration (hours)
 ### Run the Script
 
 ```bash
-python jira_worklog_uploader_improved.py
+python jira_worklog_uploader.py
 ```
 
 ### Output Example

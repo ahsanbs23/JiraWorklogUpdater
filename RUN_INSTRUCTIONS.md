@@ -42,7 +42,7 @@ You should see output confirming the installation of `requests` and `python-date
 
 ### Basic Run
 ```bash
-python jira_worklog_uploader_improved.py
+python jira_worklog_uploader.py
 ```
 
 This will:

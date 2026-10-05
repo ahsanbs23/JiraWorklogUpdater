@@ -1,8 +1,10 @@
 # Jira Worklog Uploader
 
-A Python script to bulk import work logs from a CSV file into Jira, with automatic timezone conversion and UTC time handling.
+Python scripts to bulk import work logs from a CSV file into Jira (`jira_worklog_uploader.py`), and to export logged hours for selected people over a date range back to CSV (`jira_worklog_report.py`).
 
 ## Features
+
+- 📤 **Worklog Report**: Export logged hours per person for a date range to CSV, including client reference and components
 
 - 📋 **CSV Import**: Read worklogs from a structured CSV file
 - 🕐 **Timezone Conversion**: Automatically converts local time (GMT+6) to UTC for Jira
@@ -106,6 +108,61 @@ The script provides helpful feedback:
 - ❌ Failed: Shows issue key and error details
 - ⚠️ Skipped: Warns about rows that couldn't be processed
 
+## Worklog Report
+
+`jira_worklog_report.py` is read-only. It fetches the worklogs of one or more people within a date range and writes them to a CSV.
+
+### Configuration
+
+Add to `.env`:
+
+```env
+REPORT_EMAILS=person1@example.com,person2@example.com
+REPORT_START_DATE=2026-09-01
+REPORT_END_DATE=2026-09-30
+```
+
+| Variable | Required | Description |
+|---|---|---|
+| `REPORT_EMAILS` | Yes | Comma-separated emails (display names or Jira accountIds also work) |
+| `REPORT_START_DATE` | Yes | Start date, `YYYY-MM-DD`, inclusive |
+| `REPORT_END_DATE` | Yes | End date, `YYYY-MM-DD`, inclusive |
+| `REPORT_OUTPUT_PATH` | No | Output file (default: `worklog_report_<start>_<end>.csv`) |
+| `CLIENT_REF_FIELD_NAME` | No | Name of the client reference custom field (default: `Client Reference`) |
+| `CLIENT_REF_FIELD_ID` | No | Field ID, e.g. `customfield_10820`; skips the name lookup |
+
+Day boundaries use `LOCAL_TIMEZONE_OFFSET`, same as the uploader.
+
+### Run
+
+```bash
+python jira_worklog_report.py
+```
+
+Flags override `.env` for a single run:
+
+```bash
+python jira_worklog_report.py --emails a@x.com,b@x.com --start 2026-09-01 --end 2026-09-30 -o september.csv
+```
+
+### Output
+
+One row per worklog, sorted by person then date. The first four columns match the uploader's input CSV (dates as `M/D/YYYY`):
+
+```
+Date,Task Key,What did you do?,Duration (hours),Client Reference,Components,Logged By
+9/15/2026,PROJ-123,Implemented feature X,8,ACME-42,Checkout,Jane Doe
+```
+
+- **Client Reference**: custom field on the issue
+- **Components**: issue components, joined with `, `
+- **Logged By**: Jira display name of the person who logged the work
+
+### Notes
+
+- Looking up by email can fail if the user's Jira privacy settings hide it; use their accountId instead.
+- Issues the API token's user cannot browse are not included in the totals.
+
 ## How It Works
 
 1. **Load Configuration**: Reads environment variables from `.env`
@@ -150,7 +207,8 @@ To change timezone, update `LOCAL_TIMEZONE_OFFSET` in `.env`.
 
 ```
 jira-worklog-cleanup/
-├── jira_worklog_uploader_improved.py  # Main script
+├── jira_worklog_uploader.py             # Upload worklogs from CSV to Jira
+├── jira_worklog_report.py               # Export worklogs for a date range to CSV
 ├── requirements.txt                     # Python dependencies
 ├── .env.example                         # Example configuration template
 ├── .env                                 # Actual configuration (git ignored)

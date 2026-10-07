@@ -127,7 +127,7 @@ REPORT_END_DATE=2026-09-30
 | `REPORT_EMAILS` | Yes | Comma-separated emails (display names or Jira accountIds also work) |
 | `REPORT_START_DATE` | Yes | Start date, `YYYY-MM-DD`, inclusive |
 | `REPORT_END_DATE` | Yes | End date, `YYYY-MM-DD`, inclusive |
-| `REPORT_OUTPUT_PATH` | No | Output file (default: `worklog_report_<start>_<end>.csv`) |
+| `REPORT_OUTPUT_PATH` | No | Output file (default: `worklog_report_<people>_<start>_<end>.csv`, e.g. `worklog_report_ana_doe_2026-09-01_2026-09-30.csv`; never overwrites an earlier report, a `_2`, `_3` suffix is added instead) |
 | `CLIENT_REF_FIELD_NAME` | No | Name of the client reference custom field (default: `Client Reference`) |
 | `CLIENT_REF_FIELD_ID` | No | Field ID, e.g. `customfield_10820`; skips the name lookup |
 
